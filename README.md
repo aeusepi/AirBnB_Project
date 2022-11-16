@@ -15,7 +15,7 @@ There should be no necessary libraries to run the code here beyond the Anaconda 
 For this project, to find what type of properties where listed on AirBnb for the city of Seattle, area of listing, most common features and pricing strategy. The goal of the analysis is understand for a new host the minumum requirments to compete with existing listings and what type of discunt to offer to beat well rated hosts. 
 
 
-1. What is the AirBnb market in siattle looks like?
+1. What is the AirBnb market in Seattle looking like?
 2. What are the most common features of a listing ?
 3. What is the average price per night per person and what type of price policy is most common for longer stays?
 4. What are the key factors driving the price per night? 
