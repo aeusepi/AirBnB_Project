@@ -284,7 +284,7 @@ def convert_amenities(df):
     Input: df - the AirBnb Seattle dataset containing the unprocessed column's data
     Output: df - the modified dataset containing the transformed features
     """
-    
+  
     # Look for presence of the string within the amenities column
     df['amenities_tv'] = df['amenities'].str.contains('TV')
     df['amenities_internet'] = df['amenities'].str.contains('Internet')
@@ -754,3 +754,21 @@ def convert_host_identity_verified(df):
     df['host_identity_verified'] = df['host_identity_verified'].map({'t': 1}).fillna(0)
     
     return df
+
+
+def convert_colCont2List (df, var):
+    amenitis =df[var]
+
+    Row_list = []
+    for row in amenitis.iteritems():
+        mylist = row[1].replace("{","").replace("}","").replace("\"","").replace(" ","").split(",")
+        Row_list.append(mylist)
+
+    flat_list = []
+    for sublist in Row_list:
+        for item in sublist:
+            flat_list.append(item)
+
+    flat_list = list(set(flat_list)) 
+
+    return flat_list
