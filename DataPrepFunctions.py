@@ -760,7 +760,7 @@ def convert_colCont2List (df, var):
     amenitis =df[var]
 
     Row_list = []
-    for row in amenitis.iteritems():
+    for row in amenitis.items():
         mylist = row[1].replace("{","").replace("}","").replace("\"","").replace(" ","").split(",")
         Row_list.append(mylist)
 
@@ -772,3 +772,35 @@ def convert_colCont2List (df, var):
     flat_list = list(set(flat_list)) 
 
     return flat_list
+
+
+def mostcommon_staff(group_prop,df_properties,items):
+    
+    full_db= []
+    i=0
+    for item in items:
+
+        Prop_type_amen = group_prop['amenities'].apply(lambda x: x.str.contains(item,regex=False).sum())
+        Prop_type_amen = Prop_type_amen.set_index("property_type")
+
+        total  = df_properties['property_type'].value_counts()
+        Pct_amem = pd.concat([Prop_type_amen,total], axis='columns',sort = False)
+        srt_title = item + "_" +"pct"
+
+        Pct_amem[srt_title] = Pct_amem["amenities"]/Pct_amem["property_type"]
+        Pct_final = Pct_amem.drop(["amenities","property_type"],axis =1)
+        Pct_final
+
+        if i == 0:
+            
+            full_db = Pct_final
+
+        else:
+
+            full_db = pd.concat([Pct_final,full_db],axis='columns',sort = False)
+
+        i += 1
+    
+    return full_db
+
+    
