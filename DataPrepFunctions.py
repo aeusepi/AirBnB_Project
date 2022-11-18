@@ -774,7 +774,7 @@ def convert_colCont2List (df, var):
     return flat_list
 
 
-def mostcommon_staff(group_prop,df_properties,items):
+def mostcommon_stuff(group_prop,df_properties,items):
     
     full_db= []
     i=0
@@ -801,6 +801,6 @@ def mostcommon_staff(group_prop,df_properties,items):
 
         i += 1
     
-    return full_db
+    return full_db.drop("_pct",axis=1)
 
     
