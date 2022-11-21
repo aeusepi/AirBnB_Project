@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 
-def clean_data(df,var2predict,col2exclude):
+def clean_data(df,var2predict = 'none',col2exclude = 'none'):
     '''
     INPUT
     df - pandas dataframe 
@@ -29,8 +29,11 @@ def clean_data(df,var2predict,col2exclude):
     6. Create dummy columns for all the categorical variables in X, drop the original columns
     '''
     # Drop rows with missing salary values the data we want to predict
+   
     df = df.dropna(subset=[var2predict], axis=0)
     y = df[var2predict]
+        
+  
     
     #Drop respondent and expected salary columns not needed for the analysis
     df = df.drop(col2exclude, axis=1)
@@ -50,6 +53,44 @@ def clean_data(df,var2predict,col2exclude):
     
     X = df
     return X, y
+
+
+def clean_data_basic(df,col2exclude):
+    '''
+    INPUT
+    df - pandas dataframe 
+    var2predict - the variable to be estimated 
+    col2exclude - columns that aren't useful for the anlysis
+
+    OUTPUT
+    X - A matrix holding all of the variables you want to consider when predicting the response
+    y - the corresponding response vector
+    
+    This function cleans df using the following steps to produce X and y:
+    1. Drop all the rows with no salaries
+    2. Create X as all the columns that are not the Salary column
+    3. Create y as the Salary column
+    4. Drop the Salary, Respondent, and the ExpectedSalary columns from X
+    5. For each numeric variable in X, fill the column with the mean value of the column.
+    6. Create dummy columns for all the categorical variables in X, drop the original columns
+    '''
+    # Drop rows with missing salary values the data we want to predict
+    df = df.drop(col2exclude, axis=1)
+    # Fill numeric columns with the mean - select the numeric variables 
+    num_vars = df.select_dtypes(include=['float', 'int']).columns
+    
+    for col in num_vars:
+        # loop throughout the columns and replace the NAs with the mean/mode/meadian 
+        df[col].fillna((df[col].median()), inplace=True)
+        
+    # Dummy the categorical variables those are listed like objects
+    cat_vars = df.select_dtypes(include=['object']).copy().columns
+    for var in  cat_vars:
+        # for each cat add dummy var, drop original column
+        df = pd.concat([df.drop(var, axis=1), pd.get_dummies(df[var], prefix=var, prefix_sep='_', drop_first=True)], axis=1)
+    
+    X = df
+    return X
 
 def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=True):
     '''
@@ -328,7 +369,7 @@ def convert_amenities(df):
     df['amenities_hair_dryer'] = df['amenities'].str.contains('Hair Dryer')
     df['amenities_lock_on_bedroom_door'] = df['amenities'].str.contains('Lock on Bedroom Door')
     
-    # Remove the original categorical column
+    # Remove the oridfginal categorical column
     df = df.drop(['amenities'], axis=1)
     
     return df    
