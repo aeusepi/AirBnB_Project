@@ -4,6 +4,7 @@ from collections import defaultdict
 #import AllTogetherSolns as s
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score, mean_squared_error
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
@@ -29,12 +30,11 @@ def clean_data(df,var2predict = 'none',col2exclude = 'none'):
     6. Create dummy columns for all the categorical variables in X, drop the original columns
     '''
     # Drop rows with missing salary values the data we want to predict
-   
+    
     df = df.dropna(subset=[var2predict], axis=0)
     y = df[var2predict]
         
-  
-    
+
     #Drop respondent and expected salary columns not needed for the analysis
     df = df.drop(col2exclude, axis=1)
     
@@ -92,7 +92,7 @@ def clean_data_basic(df,col2exclude):
     X = df
     return X
 
-def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=True):
+def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=True, norm = True):
     '''
     #cutoffs here pertains to the number of missing values allowed in the used columns.
     #Therefore, lower values for the cutoff provides more predictors in the model.
@@ -115,7 +115,7 @@ def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=Tr
 
         #reduce X matrix selecting only the colums cointaing enough non zeros values in dummy cat var
         #selecting all those 
-        reduce_X = X.iloc[:, np.where((X.sum() > cutoff) == True)[0]]
+        reduce_X = drop_almost_zero(X,cutoff)
         
         #how many colums we are selecting
         num_feats.append(reduce_X.shape[1])
@@ -124,7 +124,7 @@ def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=Tr
         X_train, X_test, y_train, y_test = train_test_split(reduce_X, y, test_size = test_size, random_state=random_state)
 
         #fit the model and obtain pred response
-        lm_model = LinearRegression(normalize=True)
+        lm_model = LinearRegression(normalize=norm)
         lm_model.fit(X_train, y_train)
         y_test_preds = lm_model.predict(X_test)
         y_train_preds = lm_model.predict(X_train)
@@ -158,6 +158,18 @@ def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=Tr
     lm_model.fit(X_train, y_train)
 
     return r2_scores_test, r2_scores_train, lm_model, X_train, X_test, y_train, y_test
+
+
+def drop_almost_zero(df, percentage):
+    #row_cut_off = int(percentage/100*len(df.columns))
+    #df = df[(df==0).sum(axis='columns') <= row_cut_off]
+
+    column_cut_off = int(percentage/100*len(df)) 
+    b = (df == 0).sum(axis='rows')
+    df = df[ b[ b <= column_cut_off].index.values ]
+
+    return df
+
 
 def coef_weights(lm_model, X_train):
     '''
