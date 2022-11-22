@@ -5,6 +5,9 @@ from collections import defaultdict
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, mean_squared_error
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
@@ -119,12 +122,11 @@ def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=Tr
         
         #how many colums we are selecting
         num_feats.append(reduce_X.shape[1])
-        
         #split the data into train and test
         X_train, X_test, y_train, y_test = train_test_split(reduce_X, y, test_size = test_size, random_state=random_state)
 
         #fit the model and obtain pred response
-        lm_model = LinearRegression(normalize=norm)
+        lm_model = make_pipeline(StandardScaler(with_mean=norm,with_std=norm), LinearRegression())
         lm_model.fit(X_train, y_train)
         y_test_preds = lm_model.predict(X_test)
         y_train_preds = lm_model.predict(X_train)
@@ -146,18 +148,19 @@ def find_optimal_lm_mod(X, y, cutoffs, test_size = .30, random_state=42, plot=Tr
     best_cutoff = max(results, key=results.get)
 
     #reduce X matrix
-    reduce_X = X.iloc[:, np.where((X.sum() > int(best_cutoff)) == True)[0]]
+    reduce_X = drop_almost_zero(X,int(best_cutoff))
     # how many columns have been selected
     num_feats.append(reduce_X.shape[1])
+    
 
     #split the data into train and test
     X_train, X_test, y_train, y_test = train_test_split(reduce_X, y, test_size = test_size, random_state=random_state)
 
     #fit the model
-    lm_model = LinearRegression(normalize=True)
+    lm_model = make_pipeline(StandardScaler(with_mean=norm,with_std=norm), LinearRegression())
     lm_model.fit(X_train, y_train)
 
-    return r2_scores_test, r2_scores_train, lm_model, X_train, X_test, y_train, y_test
+    return r2_scores_test, r2_scores_train, lm_model, X_train, X_test, y_train, y_test , results
 
 
 def drop_almost_zero(df, percentage):
@@ -169,6 +172,8 @@ def drop_almost_zero(df, percentage):
     df = df[ b[ b <= column_cut_off].index.values ]
 
     return df
+
+
 
 
 def coef_weights(lm_model, X_train):
@@ -185,8 +190,10 @@ def coef_weights(lm_model, X_train):
     '''
     coefs_df = pd.DataFrame()
     coefs_df['est_int'] = X_train.columns
-    coefs_df['coefs'] = lm_model.coef_
-    coefs_df['abs_coefs'] = np.abs(lm_model.coef_)
+    coefs_df['est_int_model'] = lm_model[:-1].get_feature_names_out()
+    coefs_df['coefs'] = lm_model.steps[1][1].coef_
+    coefs_df['coefs2'] = lm_model[-1].coef_
+    coefs_df['abs_coefs'] = np.abs(lm_model.steps[1][1].coef_)
     coefs_df = coefs_df.sort_values('abs_coefs', ascending=False)
     
     return coefs_df
