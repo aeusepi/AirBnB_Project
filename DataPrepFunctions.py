@@ -173,9 +173,6 @@ def drop_almost_zero(df, percentage):
 
     return df
 
-
-
-
 def coef_weights(lm_model, X_train):
     '''
     INPUT:
