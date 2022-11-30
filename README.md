@@ -38,7 +38,7 @@ In the folder there are a Jupinter Notebook and a python file contianing useful 
     - Property type (House or Apartment)
     - CX_Score (number and rating)
 
-Ultimately, it is not clear if a brand new host should offer a discount. Indded, the qualification as SuperHost has a positive impact but the amount of reviews and    quality of rating has not. The neighbourood and specific perks provided can be helpful to boost the listing price. Overall, the new host needs to make a well   rounded listing considering the location, perks and crucial elements (bedroom and bathroom) withouth necessarly offer a discount to compete successfuly in the Seattle Airbnb market.
+Ultimately, it is not clear if a brand-new host should offer a discount. Indded, the qualification as SuperHost has a positive impact but the number of reviews and quality of rating has not. The neighbourhood and specific perks provided can be helpful to boost the listing price. Overall, the new host needs to make a well-rounded listing considering the location, perks and crucial elements (bedroom and bathroom) without necessarily offering a discount to compete successfully in the Seattle Airbnb market.
 
 ## Licensing, Authors, and Acknowledgements  <a name="licensing"></a>
 * [Choose an Open Source License](https://choosealicense.com)
