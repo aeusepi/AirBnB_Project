@@ -653,8 +653,8 @@ def convert_host_since(df):
     Output: df - the modified dataset containing the transformed features
     """
     
-    # Subtract the dates to get the number of days
-    df['days_as_host'] = (pd.to_datetime(df['last_scraped']) - pd.to_datetime(df['host_since'])) / np.timedelta64(1, 'D')
+    # Subtract the dates to get the number of years
+    df['years_as_host'] = ((pd.to_datetime(df['last_scraped']) - pd.to_datetime(df['host_since'])) / np.timedelta64(1, 'D'))/365
     
     # Drop the original column
     df = df.drop([ 'last_scraped'], axis=1)
